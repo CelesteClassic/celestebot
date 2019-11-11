@@ -26,7 +26,7 @@ class Utils(commands.Cog):
             except ValueError:
                 return argument
 
-    @commands.command(aliases=["db", "gif", "gifdb"])
+    @commands.command(aliases=["db", "gif", "gifdb", "gifs"])
     async def database(self, ctx, *, query: QueryConverter):
 
         # if last element is an int then it's a page
