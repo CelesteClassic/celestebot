@@ -49,6 +49,7 @@ class Utils(commands.Cog):
         total_pages = len(result)
 
         index = index%total_pages
+        print(index)
         
         embed = discord.Embed(color=0xFF004D)
         embed.set_image(url=result[index])
@@ -73,6 +74,9 @@ class Utils(commands.Cog):
                     index += 1
                 else:
                     index -= 1
+
+                index = index%total_pages
+
 
                 embed.set_image(url=result[index])
                 embed.set_footer(text=f"Page {index+1}/{total_pages}")
