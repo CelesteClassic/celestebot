@@ -49,7 +49,6 @@ class Utils(commands.Cog):
         total_pages = len(result)
 
         index = index%total_pages
-        print(index)
         
         embed = discord.Embed(color=0xFF004D)
         embed.set_image(url=result[index])
