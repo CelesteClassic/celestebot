@@ -4,7 +4,6 @@ import discord
 import requests
 import config
 import asyncio
-import typing
 
 class Utils(commands.Cog):
     
