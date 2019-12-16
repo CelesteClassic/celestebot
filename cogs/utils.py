@@ -4,6 +4,7 @@ import discord
 import requests
 import config
 import asyncio
+import typing
 
 class Utils(commands.Cog):
     
@@ -15,6 +16,8 @@ class Utils(commands.Cog):
         async def convert(self, ctx, argument):
 
             argument_list = argument.split()
+            if not argument:
+                return None
             # return a list with query + page if last number is a page
             try:
                 page = int(argument_list[-1])
@@ -27,7 +30,11 @@ class Utils(commands.Cog):
                 return argument
 
     @commands.command(aliases=["db", "gif", "gifdb", "gifs"])
-    async def database(self, ctx, *, query: QueryConverter):
+    async def database(self, ctx, *, query: QueryConverter = None):
+
+        if not query:
+            await ctx.send(self.database_url)
+            return
 
         # if last element is an int then it's a page
         if (isinstance(query[-1], int)):
