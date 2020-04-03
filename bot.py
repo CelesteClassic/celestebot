@@ -1,5 +1,6 @@
 from discord.ext import commands
 import discord
+import logging
 
 import datetime
 import config
@@ -14,12 +15,15 @@ class CelesteBot(commands.Bot):
 
     def __init__(self):
         super().__init__(command_prefix='!')
+        self.logger = logging.getLogger('discord')
 
         with open('custom_commands.json', 'r') as f:
             self.custom_commands = json.load(f)
 
         for extension in extensions:
             self.load_extension(extension)
+            
+    
 
     async def on_ready(self):
         self.uptime = datetime.datetime.utcnow()
@@ -27,7 +31,7 @@ class CelesteBot(commands.Bot):
         game = discord.Game("gemskip 2300m")
         await self.change_presence(activity=game)
 
-        print(f'Online: {self.user} (ID: {self.user.id})')
+        self.logger.warning(f'Online: {self.user} (ID: {self.user.id})')
 
     async def on_message(self, message):
 
