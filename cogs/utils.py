@@ -31,9 +31,7 @@ class Utils(commands.Cog):
     @commands.command()
     async def ping(self, ctx):
         #"""Shows the Client Latency."""
-        t = await ctx.send('Pong!')
-        ms = (t.created_at-ctx.message.created_at).total_seconds() * 1000
-        await t.edit(content='Pong! {}ms'.format(int(ms)))
+        await ctx.send(f'Pong! {round(self.bot.latency*1000)}ms')
 
     @commands.command(aliases=["db", "gif", "gifdb", "gifs"])
     async def database(self, ctx, *, query: QueryConverter = None):
