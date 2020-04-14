@@ -80,6 +80,7 @@ class Speedrun(commands.Cog):
             seconds, milliseconds = divmod(seconds*1000, 1000)
             hours, minutes = divmod(minutes, 60)
             hours = "" if hours == 0 else str(int(hours)) + ":"
+            milliseconds = "" if milliseconds == 0 else "." + str(int(milliseconds))
             
             
             embed_dict = {
