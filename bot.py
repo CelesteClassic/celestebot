@@ -8,6 +8,7 @@ import json
 
 extensions = [
     "cogs.utils",
+    "cogs.src",
     "cogs.admin"
 ]
 
