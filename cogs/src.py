@@ -14,20 +14,27 @@ class Run:
     game: str
     igt: int
     rta: int
-    
+    runType: str
+
     @staticmethod
     def from_json(runs_json, game) -> list:
 
         runs = []
-        
+
         for run in runs_json['data']:
 
             for key, value in run.items():
                 if key == 'weblink':
                     link = value
+                if key == 'level':
+                    runType = 'categories'
+                    if value:
+                        runType = 'levels'
+                        categoryID = value
                 if key == 'category':
-                    categoryID = value
-                    categoryRequest = requests.get(f"https://www.speedrun.com/api/v1/categories/{categoryID}")
+                    if runType == 'categories':
+                        categoryID = value
+                    categoryRequest = requests.get(f"https://www.speedrun.com/api/v1/{runType}/{categoryID}")
                     categoryRequest = categoryRequest.json()
                     categoryName = categoryRequest['data']['name']
                 if key == 'players':
@@ -41,7 +48,7 @@ class Run:
                     igt = value['ingame_t']
                     rta = value['realtime_t']
 
-            runs.append(Run(link, categoryName, player, game, igt, rta))
+            runs.append(Run(link, categoryName, player, game, igt, rta, runType))
 
         return runs
 
@@ -84,7 +91,7 @@ class Speedrun(commands.Cog):
             
             
             embed_dict = {
-                "title": run.game,
+                "title": "Individual Level" if run.runType == "levels" else run.game,
                 "description": f"{run.categoryName} in {hours}{int(minutes):02d}:{int(seconds):02d}.{int(milliseconds)} by {run.player}",
                 "url": run.link,
                 "color": 16711680,
