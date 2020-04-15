@@ -87,11 +87,11 @@ class Speedrun(commands.Cog):
             seconds, milliseconds = divmod(seconds*1000, 1000)
             hours, minutes = divmod(minutes, 60)
             hours = "" if hours == 0 else str(int(hours)) + ":"
-            milliseconds = "" if milliseconds == 0 else "." + f"{int(milliseconds):03d}"
+            milliseconds = "" if milliseconds == 0 else "." + str(int(milliseconds))
             
             embed_dict = {
                 "title": "Individual Level" if run.runType == "levels" else run.game,
-                "description": f"{run.categoryName} in {hours}{int(minutes):02d}:{int(seconds):02d}.{int(milliseconds)} by {run.player}",
+                "description": f"{run.categoryName} in {hours}{int(minutes):02d}:{int(seconds):02d}.{int(milliseconds):03d} by {run.player}",
                 "url": run.link,
                 "color": 16711680,
                 "fields": [
