@@ -70,7 +70,10 @@ class Speedrun(commands.Cog):
         all_runs = []
         for game in self.games.keys():
             r = requests.get(f'https://www.speedrun.com/api/v1/runs?game={game}&status=new&max=200')
-            runs_json = json.loads(r.text)
+            try:
+                runs_json = json.loads(r.text)
+            except json.decoder.JSONDecodeError:
+                return
             all_runs += Run.from_json(runs_json, self.games[game])
 
         if len(all_runs) == 0:
