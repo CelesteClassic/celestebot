@@ -108,7 +108,7 @@ class Tas(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.channel.id == 514502736608231435:
+        if message.channel.id == 548203844992237578:
             if len(message.attachments) > 0:
                 file = message.attachments[0]
                 if file.filename.endswith(".tas"):
