@@ -155,8 +155,6 @@ class Tas(commands.Cog):
                     else:
                         base_category = "any"
 
-                    print(game_detected)
-
                     await message.channel.send(f'I see a TAS file! The detected category is {game_detected} {category_detected}, please confirm this by sending a message with "yes" or "no", if you do not wish to upload this file, say "no" (or just do nothing)')
                     def check(m):
                         return ('no' in m.content.lower() or 'yes' in m.content.lower()) and m.channel == message.channel
@@ -181,7 +179,6 @@ class Tas(commands.Cog):
                     loop = asyncio.get_running_loop()
                     result = await loop.run_in_executor(None, run)      
                     oldtime = datetime.strptime(result.decode("utf-8").split("(")[0][:-1][:10], "%M:%S.%f")
-                    print(oldtime)
 
                     filePath = f"{home}/tasdatabase/{game_detected}/{category_detected}/" + file.filename
                     await file.save(filePath)
