@@ -141,8 +141,10 @@ class Tas(commands.Cog):
                                 category_detected = i
                                 break
                             secondary_category = i
+                        
 
                         if category_detected != "gemskip":
+                            category_detected = secondary_category
                             secondary_category = None
                         elif secondary_category == None:
                             secondary_category = "any"
@@ -152,6 +154,7 @@ class Tas(commands.Cog):
                     if secondary_category:
                         category_detected += secondary_category
                         base_category = secondary_category
+                    
                     else:
                         base_category = "any"
 
