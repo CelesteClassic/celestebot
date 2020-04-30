@@ -238,7 +238,7 @@ class Tas(commands.Cog):
                         force = True
                         
 
-                    if delta >= timedelta(0) and not force:
+                    if delta <= timedelta(0) and not force:
                         await msg.channel.send(f"This file doesn't save time in {game_detected} {category_detected} and will not be uploaded!")
                         return
                     updateAndCommit(filePath, game_detected, category_detected)
