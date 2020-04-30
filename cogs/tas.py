@@ -151,6 +151,9 @@ class Tas(commands.Cog):
                     
                             
                     base_category = None
+
+                    if category_detected != "gemskip":
+                        base_category = category_detected
                     if secondary_category:
                         category_detected += secondary_category
                         base_category = secondary_category
@@ -158,7 +161,7 @@ class Tas(commands.Cog):
                     else:
                         base_category = "any"
 
-                    await message.channel.send(f'I see a TAS file! The detected category is {game_detected} {category_detected}, please confirm this by sending a message with "yes" or "no", if you do not wish to upload this file, say "no" (or just do nothing)')
+                    await message.channel.send(f'I see a TAS file! The detected category is {game_detected} {category_detected} with the base category {base_category}, please confirm this by sending a message with "yes" or "no", if you do not wish to upload this file, say "no" (or just do nothing)')
                     def check(m):
                         return ('no' in m.content.lower() or 'yes' in m.content.lower()) and m.channel == message.channel and m.author == message.author
                     
