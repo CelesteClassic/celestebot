@@ -129,12 +129,12 @@ class Tas(commands.Cog):
                         # haha python
                         try:
      
-                            game_detected = next(v for k, v in self.games.items() if any(game in message.content for game in k))
+                            game_detected = next(v for k, v in self.games.items() if any(game.lower() in message.content.lower() for game in k))
 
                         except StopIteration:
                             game_detected = 'classic'
 
-                        it = (v for k, v in self.categories.items() if any(category in message.content for category in k))
+                        it = (v for k, v in self.categories.items() if any(category.lower() in message.content.lower() for lower(category in k))
 
                         for i in it:
                             if i == "gemskip":
@@ -143,7 +143,7 @@ class Tas(commands.Cog):
                             secondary_category = i
 
                         if category_detected != "gemskip":
-                            secondary_category == None
+                            secondary_category = None
                         elif secondary_category == None:
                             secondary_category = "any"
                     
@@ -157,7 +157,7 @@ class Tas(commands.Cog):
 
                     await message.channel.send(f'I see a TAS file! The detected category is {game_detected} {category_detected}, please confirm this by sending a message with "yes" or "no", if you do not wish to upload this file, say "no" (or just do nothing)')
                     def check(m):
-                        return ('no' in m.content.lower() or 'yes' in m.content.lower()) and m.channel == message.channel
+                        return ('no' in m.content.lower() or 'yes' in m.content.lower()) and m.channel == message.channel and m.author == message.author
                     
                     try:
                         msg = await self.bot.wait_for('message', check=check, timeout=30)
