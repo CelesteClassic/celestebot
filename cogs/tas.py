@@ -232,7 +232,13 @@ class Tas(commands.Cog):
 
                     await msg.edit(embed=embed)
 
-                    if delta >= timedelta(0):
+                    force = False
+
+                    if "--force" in message.content and message.author.guild_permissions.manage_channels:
+                        force = True
+                        
+
+                    if delta >= timedelta(0) and not force:
                         await msg.channel.send(f"This file doesn't save time in {game_detected} {category_detected} and will not be uploaded!")
                         return
                     updateAndCommit(filePath, game_detected, category_detected)

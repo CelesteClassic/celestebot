@@ -17,20 +17,6 @@ extensions = [
     "cogs.admin"
 ]
 
-
-def run():
-    process = subprocess.Popen("Xvfb :99 & DISPLAY=:99 love ~/UniversalClassicTas/CelesteTAS/ &", stdout=subprocess.PIPE, shell=True)
-    final_time = None
-    while True:
-        output = process.stdout.readline()
-        if output == '' and process.poll() is not None:
-            break
-        if output:
-            if output.strip() == b'maybe it ended idk':
-                return final_time
-            else:
-                final_time = output.strip()
-
 class CelesteBot(commands.Bot):
 
     def __init__(self):
