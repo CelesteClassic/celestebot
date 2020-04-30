@@ -92,7 +92,7 @@ class Tas(commands.Cog):
 
         #self.base_url = "https://celesteclassic.github.io/tasdatabase/{}/{}/"
 
-
+        self.base_categories = {('100', 'any', 'gemskipany', 'key'): 'any', ('nodiag'): 'nodiag'}
         self.games = {('classic', 'vanilla', 'main'): 'classic', ('terra', 'australis'): 'australis', ('adelie',): 'adelie',
                       ('everred', 'ever red'): 'everred', ('impossibleste', 'impossible celeste'): 'impossibleste', ('noeleste',): 'noeleste',
                       ('old site', 'oldsite'): 'oldsite', ('perisher',): 'perisher'}
@@ -153,7 +153,11 @@ class Tas(commands.Cog):
                     base_category = None
 
                     if category_detected != "gemskip":
-                        base_category = category_detected
+                        for k, v in self.base_categories.items():
+                            if category_detected in k:
+                                base_category = v
+                                break
+                        
                     if secondary_category:
                         category_detected += secondary_category
                         base_category = secondary_category
