@@ -21,8 +21,8 @@ def updateAndCommit(filePath, game, category):
     home = str(Path.home())
     gitPath=home+'/tasdatabase'
     repo = git.Repo(gitPath)
-    repo.git.fetch('--all')
-    repo.git.reset('--hard', 'origin/master')
+    #repo.git.fetch('--all')
+    #repo.git.reset('--hard', 'origin/master')
 
     with open(filePath, 'r') as f:
         data=f.read()
@@ -108,7 +108,7 @@ class Tas(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.channel.id == 514502736608231435:
+        if message.channel.id == 548203844992237578:
             if len(message.attachments) > 0:
                 file = message.attachments[0]
                 if file.filename.endswith(".tas"):
@@ -220,7 +220,7 @@ class Tas(commands.Cog):
                 
                     newtime = datetime.strptime(result.decode("utf-8").split("(")[0][:-1][:10], "%M:%S.%f")
 
-                    delta = newtime-oldtime
+                    delta = oldtime-newtime
 
                     newtime_str = datetime.strftime(newtime, "%M:%S.%f")
                     
@@ -228,7 +228,7 @@ class Tas(commands.Cog):
                     embed.colour = 0x32CD32
                     embed.title = f"{int(file.filename[3:-4])*100}m - Playback finished!"
                     embed.add_field(name="Final time", value=f"{newtime_str}")
-                    embed.add_field(name="Time delta", value=f"{delta}")
+                    embed.add_field(name="Time saved", value=f"{delta}")
 
                     await msg.edit(embed=embed)
 
