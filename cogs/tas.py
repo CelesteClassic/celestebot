@@ -92,7 +92,7 @@ class Tas(commands.Cog):
 
         #self.base_url = "https://celesteclassic.github.io/tasdatabase/{}/{}/"
 
-        self.base_categories = {('100', 'any', 'gemskipany', 'key'): 'any', ('nodiag'): 'nodiag'}
+        self.base_categories = {('100', 'any', 'gemskipany', 'key'): 'any', ('nodiag'): 'nodiag', ('mindashes'): 'mindashes'}
         self.games = {('classic', 'vanilla', 'main'): 'classic', ('terra', 'australis'): 'australis', ('adelie',): 'adelie',
                       ('everred', 'ever red'): 'everred', ('impossibleste', 'impossible celeste'): 'impossibleste', ('noeleste',): 'noeleste',
                       ('old site', 'oldsite'): 'oldsite', ('perisher',): 'perisher'}
@@ -161,10 +161,7 @@ class Tas(commands.Cog):
                     if secondary_category:
                         category_detected += secondary_category
                         base_category = secondary_category
-                    
-                    else:
-                        base_category = "any"
-
+                   
                     await message.channel.send(f'I see a TAS file! The detected category is {game_detected} {category_detected} with the base category {base_category}, please confirm this by sending a message with "yes" or "no", if you do not wish to upload this file, say "no" (or just do nothing)')
                     def check(m):
                         return ('no' in m.content.lower() or 'yes' in m.content.lower()) and m.channel == message.channel and m.author == message.author
