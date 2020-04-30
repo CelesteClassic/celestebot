@@ -134,7 +134,7 @@ class Tas(commands.Cog):
                         except StopIteration:
                             game_detected = 'classic'
 
-                        it = (v for k, v in self.categories.items() if any(category.lower() in message.content.lower() for lower(category in k))
+                        it = (v for k, v in self.categories.items() if any(category.lower() in message.content.lower() for category in k))
 
                         for i in it:
                             if i == "gemskip":
