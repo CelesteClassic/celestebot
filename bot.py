@@ -20,7 +20,9 @@ extensions = [
 class CelesteBot(commands.Bot):
 
     def __init__(self):
-        super().__init__(command_prefix='!')
+        intents = discord.Intents.default()
+        intents.members = True
+        super().__init__(command_prefix='!', intents=intents)
         self.logger = logging.getLogger('discord')
 
         with open('custom_commands.json', 'r') as f:
@@ -29,12 +31,13 @@ class CelesteBot(commands.Bot):
         for extension in extensions:
             self.load_extension(extension)
             
-    
+    async def on_member_join(self, member):
+        await member.guild.get_channel(322437582845771777).send("Welcome! <:yadelie:642375995961114636>")
 
     async def on_ready(self):
         self.uptime = datetime.datetime.utcnow()
 
-        game = discord.Game("gemskip 2300m")
+        game = discord.Game("gemskip 2400m")
         await self.change_presence(activity=game)
 
         self.logger.warning(f'Online: {self.user} (ID: {self.user.id})')
