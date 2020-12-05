@@ -37,7 +37,7 @@ class CelesteBot(commands.Bot):
     async def on_ready(self):
         self.uptime = datetime.datetime.utcnow()
 
-        game = discord.Game("gemskip 2300m")
+        game = discord.Game("gemskip 2400m")
         await self.change_presence(activity=game)
 
         self.logger.warning(f'Online: {self.user} (ID: {self.user.id})')
