@@ -78,6 +78,8 @@ class Speedrun(commands.Cog):
 
         if len(all_runs) == 0:
             return
+	
+        print(all_runs)
 
         new_runs = [i for i in all_runs if i not in self.sent_runs]
         

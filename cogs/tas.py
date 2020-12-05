@@ -70,7 +70,7 @@ def updateAndCommit(filePath, game, category):
     repo.remotes.origin.push()
 
 def run():
-    process = subprocess.Popen("Xvfb :99 & DISPLAY=:99 love ~/UniversalClassicTas/CelesteTAS/ &", stdout=subprocess.PIPE, shell=True)
+    process = subprocess.Popen("love ~/UniversalClassicTas/CelesteTAS/ &", stdout=subprocess.PIPE, shell=True)
     final_time = None
     while True:
         output = process.stdout.readline()
@@ -111,6 +111,7 @@ class Tas(commands.Cog):
         if message.channel.id == 548203844992237578:
             if len(message.attachments) > 0:
                 file = message.attachments[0]
+		
                 if file.filename.endswith(".tas"):
 
                     home = str(Path.home())
