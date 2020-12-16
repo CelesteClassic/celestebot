@@ -290,6 +290,43 @@ class Tas(commands.Cog):
                     updateAndCommit(filePath, game_detected, category_detected)
                     await msg.channel.send(f"The files were uploaded to the github!")
 
+    """ Old commands, should remove after discord.py gets support for slash commands"""
+    @commands.command()
+    async def categories(self, ctx):
+        await ctx.send(f"Possible games in the TAS database: {list(self.games.values())}\n\nPossible categories in the TAS database: {list(self.categories.values())}")
+
+
+    @commands.command()
+    async def tas(self, ctx, game, category, *, levelname):
+        r = requests.get(f"https://celesteclassic.github.io/tasdatabase/database.json")
+
+        
+        if levelname.isdigit() and not levelname.startswith("m"):
+            levelname+="m"
+        try:
+            j = r.json()[game][category]
+        except KeyError:
+            await ctx.send("Invalid game or category!")
+            return
+        print([i for i in j])
+
+        for level in j:
+
+            if level["name"].lower() == levelname.lower():
+            
+                frames = level["frames"]
+                name = level["name"]
+                filename = level["file"]
+
+                embed = discord.Embed(color=0xFF004D)
+                embed.set_footer(text="Collected from the TAS Database")
+                embed.description = f"{game.capitalize()} {category} {name} is {frames}f"
+
+                if filename:
+                    embed.description += f"\n[TAS File](https://celesteclassic.github.io/tasdatabase/{game}/{category}/{filename})"
+
+                await ctx.send(embed=embed)
+                break
 
 def setup(bot):
     bot.add_cog(Tas(bot))
