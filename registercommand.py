@@ -104,8 +104,6 @@ tas = {
     ]
 }
 
-games = requests.get(f"https://celesteclassic.github.io/tasdatabase/database.json").json().keys()
-
 headers = {
     "Authorization": f"Bot {config.token}"
 }
