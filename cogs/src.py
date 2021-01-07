@@ -1,7 +1,7 @@
 from discord.ext import commands
 from discord.ext import tasks
 import discord
-import requests
+import aiohttp
 import json
 from dataclasses import dataclass
 
@@ -34,15 +34,21 @@ class Run:
                 if key == 'category':
                     if runType == 'categories':
                         categoryID = value
-                    categoryRequest = requests.get(f"https://www.speedrun.com/api/v1/{runType}/{categoryID}")
-                    categoryRequest = categoryRequest.json()
+                    
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get(f"https://www.speedrun.com/api/v1/{runType}/{categoryID}") as r:
+                            if r.status == 200:
+                                categoryRequest = await r.json()
+
                     categoryName = categoryRequest['data']['name']
                 if key == 'players':
                     if value[0]['rel'] == 'guest':
                         player = value[0]['name']
                     else:
-                        nameRequest = requests.get(value[0]['uri'])
-                        nameRequest = nameRequest.json()
+                        async with aiohttp.ClientSession() as session:
+                            async with session.get(value[0]['uri']) as r:
+                                if r.status == 200:
+                                    nameRequest = await r.json()
                         player = nameRequest['data']['names']['international']
                 if key == 'times':
                     igt = value['ingame_t']
@@ -69,11 +75,12 @@ class Speedrun(commands.Cog):
 
         all_runs = []
         for game in self.games.keys():
-            r = requests.get(f'https://www.speedrun.com/api/v1/runs?game={game}&status=new&max=200')
-            try:
-                runs_json = json.loads(r.text)
-            except json.decoder.JSONDecodeError:
-                return
+            runs_json = None
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f'https://www.speedrun.com/api/v1/runs?game={game}&status=new&max=200') as r:
+                    if r.status == 200:
+                        runs_json = await r.json()
+
             all_runs += Run.from_json(runs_json, self.games[game])
 
         if len(all_runs) == 0:
