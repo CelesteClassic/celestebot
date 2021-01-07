@@ -17,7 +17,7 @@ class Run:
     runType: str
 
     @staticmethod
-    def from_json(runs_json, game) -> list:
+    async def from_json(runs_json, game) -> list:
 
         runs = []
 
@@ -81,7 +81,7 @@ class Speedrun(commands.Cog):
                     if r.status == 200:
                         runs_json = await r.json()
 
-            all_runs += Run.from_json(runs_json, self.games[game])
+            all_runs += await Run.from_json(runs_json, self.games[game])
 
         if len(all_runs) == 0:
             return
