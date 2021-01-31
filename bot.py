@@ -32,7 +32,7 @@ class CelesteBot(commands.Bot):
             self.load_extension(extension)
             
     async def on_member_join(self, member):
-        await member.guild.get_channel(495648733057253391).send("Welcome! <:yadelie:642375995961114636>")
+        await member.guild.get_channel(805370260957429780).send("Welcome! <:yadelie:642375995961114636>")
 
     async def on_ready(self):
         self.uptime = datetime.datetime.utcnow()
