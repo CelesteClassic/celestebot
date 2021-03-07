@@ -62,7 +62,7 @@ class Speedrun(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.games = {'4d7e7z67': "CELESTE Classic", '369pokl1': "CELESTE Mods"}
+        self.games = {'4d7e7z67': "CELESTE Classic", '369pokl1': "CELESTE Mods", 'v1pon386': "CELESTE Classic 2"}
         self.sent_runs = []
         self.src_update.start()
 
