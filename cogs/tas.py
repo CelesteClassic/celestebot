@@ -20,7 +20,7 @@ import traceback
 
 
 # shoutouts to gonen
-def updateAndCommit(tasfile, data, game, category):
+async def updateAndCommit(tasfile, data, game, category):
     home = str(Path.home())
     gitPath=home+'/tasdatabase'
     repo = git.Repo(gitPath)
@@ -158,7 +158,7 @@ class Tas(commands.Cog):
         if len(ctx.message.attachments) > 0:
             try:
                 data = (await ctx.message.attachments[0].read()).decode("utf-8")
-                updateAndCommit(ctx.message.attachments[0], data, game, category)
+                await updateAndCommit(ctx.message.attachments[0], data, game, category)
                 await ctx.send("TAS File uploaded (probably)!")
             except:
                 traceback.print_exc()
