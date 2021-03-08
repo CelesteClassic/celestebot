@@ -20,10 +20,11 @@ import traceback
 
 
 # shoutouts to gonen
-def updateAndCommit(fileName, data, game, category):
+def updateAndCommit(tasfile, data, game, category):
     home = str(Path.home())
     gitPath=home+'/tasdatabase'
     repo = git.Repo(gitPath)
+    fileName = tasfile.filename
     #repo.git.fetch('--all')
     #repo.git.reset('--hard', 'origin/master')
 
@@ -65,6 +66,8 @@ def updateAndCommit(fileName, data, game, category):
             if file.endswith(".tas"):
                 zf.write(os.path.join(rootPath,file),os.path.join("TAS",file))
 
+    
+    await tasfile.save(os.path.join(rootPath,fileName))
     repo.index.add([os.path.join(rootPath,fileName),jsonPath,zipPath])
     commit_msg=f'updated {game} {category} {change["name"]} to be {framecount}f ({framecount-oldframes:+}f) (automated)'
     repo.index.commit(commit_msg)
@@ -155,7 +158,7 @@ class Tas(commands.Cog):
         if len(ctx.message.attachments) > 0:
             try:
                 data = (await ctx.message.attachments[0].read()).decode("utf-8")
-                updateAndCommit(ctx.message.attachments[0].filename, data, game, category)
+                updateAndCommit(ctx.message.attachments[0], data, game, category)
                 await ctx.send("TAS File uploaded (probably)!")
             except:
                 traceback.print_exc()
