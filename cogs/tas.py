@@ -59,6 +59,9 @@ async def updateAndCommit(tasfile, data, game, category):
 
     rootPath = os.path.join(gitPath, game, category)
 
+    await tasfile.save(os.path.join(rootPath,fileName))
+    repo.index.add([os.path.join(rootPath,fileName),jsonPath,zipPath])
+
 
     zipPath=os.path.join(rootPath,f"Full{game.capitalize()}{category.capitalize()}.zip")
     with zipfile.ZipFile(zipPath,"w") as zf:
@@ -67,8 +70,7 @@ async def updateAndCommit(tasfile, data, game, category):
                 zf.write(os.path.join(rootPath,file),os.path.join("TAS",file))
 
     
-    await tasfile.save(os.path.join(rootPath,fileName))
-    repo.index.add([os.path.join(rootPath,fileName),jsonPath,zipPath])
+   
     commit_msg=f'updated {game} {category} {change["name"]} to be {framecount}f ({framecount-oldframes:+}f) (automated)'
     repo.index.commit(commit_msg)
     repo.remotes.origin.push()
