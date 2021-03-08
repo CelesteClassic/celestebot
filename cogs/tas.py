@@ -154,7 +154,7 @@ class Tas(commands.Cog):
     async def uploadtas(self, ctx, game, category):
         if len(ctx.message.attachments) > 0:
             try:
-                data = await ctx.message.attachments[0].read().decode("utf-8")
+                data = (await ctx.message.attachments[0].read()).decode("utf-8")
                 updateAndCommit(data, game, category)
                 await ctx.send("TAS File uploaded (probably)!")
             except:
