@@ -25,6 +25,7 @@ async def updateAndCommit(tasfile, data, game, category):
     gitPath=home+'/tasdatabase'
     repo = git.Repo(gitPath)
     fileName = tasfile.filename
+    repo.git.pull()
     #repo.git.fetch('--all')
     #repo.git.reset('--hard', 'origin/master')
 
