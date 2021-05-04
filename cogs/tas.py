@@ -72,7 +72,7 @@ async def updateAndCommit(tasfile, data, game, category):
 
     repo.index.add([os.path.join(rootPath,fileName),jsonPath,zipPath])
    
-    commit_msg=f'updated {game} {category} {change["name"]} to be {framecount}f ({framecount-oldframes:+}f) (automated)'
+    commit_msg=f'updated {game} {category} {change["name"]} to be {framecount}f ({int(framecount)-int(oldframes):+}f) (automated)'
     repo.index.commit(commit_msg)
     repo.remotes.origin.push()
 
