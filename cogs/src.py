@@ -89,7 +89,7 @@ class Speedrun(commands.Cog):
 
         new_runs = [i for i in all_runs if i not in self.sent_runs]
         
-        self.sent_runs = all_runs
+        self.sent_runs += new_runs
 
         for run in new_runs:
             
