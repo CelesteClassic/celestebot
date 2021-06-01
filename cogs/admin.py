@@ -1,9 +1,6 @@
 from discord.ext import commands
 import discord
 
-from discord_slash import SlashCommand
-from discord_slash import SlashContext
-
 import subprocess
 
 import json

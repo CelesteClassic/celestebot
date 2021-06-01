@@ -6,9 +6,6 @@ import requests
 from datetime import datetime
 from datetime import timedelta
 
-from discord_slash import SlashCommand
-from discord_slash import SlashContext
-
 import git
 import json
 from distutils.dir_util import copy_tree
@@ -110,47 +107,6 @@ class Tas(commands.Cog):
                     ('minimum dashes', 'min dashes', 'mindashes'): 'mindashes', ('gemskip', 'gem-skip', 'gem skip'): 'gemskip',
                     ('key', 'key%'): 'key', ('nodiag', 'no diagonal dashes', 'no diag'): 'nodiag'}
 
-        self.slash = SlashCommand(bot, override_type=True)
-    
-        @self.slash.slash(name="categories")
-        async def categories(ctx):
-            await ctx.send(3, content=f"Possible games in the TAS database: {list(self.games.values())}\n\nPossible categories in the TAS database: {list(self.categories.values())}", hidden=True)
-
-
-        @self.slash.slash(name="tas")
-        async def tas(ctx, game, category, levelname, hidden=False):
-            r = requests.get(f"https://celesteclassic.github.io/tasdatabase/database.json")
-
-            
-            if levelname.isdigit() and not levelname.startswith("m"):
-                levelname+="m"
-            try:
-                j = r.json()[game][category]
-            except KeyError:
-                await ctx.send(content="Invalid game or category!", hidden=hidden)
-                return
-
-            for level in j:
-
-                if level["name"].lower() == levelname.lower():
-                
-                    frames = level["frames"]
-                    name = level["name"]
-                    filename = level["file"]
-
-                    embed = discord.Embed(color=0xFF004D)
-                    embed.set_footer(text="Collected from the TAS Database")
-                    embed.description = f"{game.capitalize()} {category} {name} is {frames}f"
-
-                    if filename:
-                        embed.description += f"\n[TAS File](https://celesteclassic.github.io/tasdatabase/{game}/{category}/{filename})"
-                    if hidden:
-                        await ctx.send(3, content=embed.description, hidden=True)
-                    else:
-                        await ctx.send(embeds=[embed])
-                    break
-
-    """ Old commands, should remove after discord.py gets support for slash commands"""
     @commands.command()
     async def categories(self, ctx):
         await ctx.send(f"Possible games in the TAS database: {list(self.games.values())}\n\nPossible categories in the TAS database: {list(self.categories.values())}")
