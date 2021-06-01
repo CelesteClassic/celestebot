@@ -5,6 +5,19 @@ import requests
 import config
 import asyncio
 
+class SwitchPageButton(discord.ui.Button['switchPage']):
+    
+    def __init__(self, position):
+        super().__init__(style=discord.ButtonStyle.blurple, label='<' if position == 0 else '>')
+        self.position = position
+
+
+    async def callback(self, interaction: discord.Interaction):
+        view: PageSwitcher = self.view
+        view.currentpage = view.currentpage - 1 if self.position == 0 else view.currentpage + 1
+
+        await view.update_page(interaction)
+
 class PageSwitcher(discord.ui.View):
 
     def __init__(self, currentpage, totalpages, results):
@@ -12,19 +25,10 @@ class PageSwitcher(discord.ui.View):
         self.totalpages = totalpages
         self.currentpage = currentpage
         self.results = results
+        self.add_item(SwitchPageButton(0))
+        self.add_item(SwitchPageButton(1))
         self.update_buttons()
-
-    @discord.ui.button(label='<', style=discord.ButtonStyle.blurple)
-    async def previouspage(self, button: discord.ui.Button, interaction: discord.Interaction):
-        self.currentpage -= 1
-
-        await self.update_page(interaction)
-
-    @discord.ui.button(label='>', style=discord.ButtonStyle.blurple)
-    async def nextpage(self, button: discord.ui.Button, interaction: discord.Interaction):
-        self.currentpage += 1
-
-        await self.update_page(interaction)
+        
         
     async def update_page(self, interaction: discord.Interaction):
 
