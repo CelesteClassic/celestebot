@@ -103,7 +103,7 @@ class Utils(commands.Cog):
             await ctx.send("Invalid number!")
         #"""Converts frames to seconds and seconds to frames"""
         if (int(number) == number):
-            await ctx.send(f'{number} frames is {number/30:.3f} seconds')
+            await ctx.send(f'{int(number)} frames is {number/30:.3f} seconds')
         else:
             await ctx.send(f'{number} seconds is approximately {round(number*30)} frames')
 
