@@ -95,6 +95,18 @@ class Utils(commands.Cog):
         #"""Shows the Client Latency."""
         await ctx.send(f'Pong! {round(self.bot.latency*1000)}ms')
 
+    @commands.command()
+    async def convert(self, ctx, number):
+        try:
+            number = float(number.replace("f", "").replace("s", ""))
+        except:
+            await ctx.send("Invalid number!")
+        #"""Converts frames to seconds and seconds to frames"""
+        if (int(number) == number):
+            await ctx.send(f'{number} frames is {number/30:.3f} seconds')
+        else:
+            await ctx.send(f'{number} seconds is approximately {round(number*30)} frames')
+
     @commands.command(aliases=["db", "gif", "gifdb", "gifs"])
     async def database(self, ctx, *, query: QueryConverter = None):
 
