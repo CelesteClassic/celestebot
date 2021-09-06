@@ -29,9 +29,12 @@ async def updateAndCommit(tasfile, data, game, category):
     inputs=list(map(int,data[data.index("]")+1:].split(',')[:-1]))
     framecount=len(inputs)-1
     dashnum=0
+    jumpnum=0
     for i in inputs:
-        if i&32:
-            dashnum+=1
+        if i & 0x20:
+            dashnum += 1
+        elif i & 0x10:
+            jumpnum += 1
 
     jsonPath=os.path.join(gitPath,'database.json')
     with open(jsonPath,'r') as f:
@@ -51,6 +54,8 @@ async def updateAndCommit(tasfile, data, game, category):
     change['frames']=framecount
     if 'dashes' in category:
         change['dashes']=dashnum
+    if 'jumps' in category:
+        change['jumps']=jumpnum
 
     with open(jsonPath, 'w') as f:
         json.dump(data,f,indent=4)
