@@ -96,8 +96,8 @@ def run():
 
 class Tas(commands.Cog):
 
-    async def is_mod(ctx):
-        return ctx.author.guild_permissions.manage_channels
+    async def can_upload_tases(ctx):
+        return ctx.author.guild_permissions.manage_channels or ctx.author.id == 455862775827136513 # snek's id
 
     def __init__(self, bot):
         self.bot = bot
@@ -116,7 +116,7 @@ class Tas(commands.Cog):
     async def categories(self, ctx):
         await ctx.send(f"Possible games in the TAS database: {list(self.games.values())}\n\nPossible categories in the TAS database: {list(self.categories.values())}")
 
-    @commands.check(is_mod)
+    @commands.check(can_upload_tases)
     @commands.command(aliases=["updatetas", "sendtas"])
     async def uploadtas(self, ctx, game, category):
         if len(ctx.message.attachments) > 0:
