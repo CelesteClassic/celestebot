@@ -23,10 +23,9 @@ def setup_logging():
     console_handler.setLevel(logging.WARNING)
     logger.addHandler(console_handler)
 
-def run_bot():
-
-    bot = CelesteBot()
-    bot.run()
+async def run_bot():
+    async with bot:    
+        await bot.run()
 
 if __name__ == "__main__":
     
@@ -34,4 +33,5 @@ if __name__ == "__main__":
 
     setup_logging()
     
-    run_bot()
+    bot = CelesteBot()
+    asyncio.run(run_bot())

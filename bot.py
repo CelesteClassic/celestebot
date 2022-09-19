@@ -13,23 +13,27 @@ from multiprocessing import Pool
 extensions = [
     "cogs.utils",
     "cogs.src",
-    "cogs.tas",
+    #"cogs.tas",
     "cogs.admin"
 ]
 
 class CelesteBot(commands.Bot):
 
+    async def load_extensions(self):
+        for extension in extensions:
+            await self.load_extension(extension)
+
     def __init__(self):
         intents = discord.Intents.default()
         intents.members = True
+        intents.message_content = True
         super().__init__(command_prefix='!', intents=intents)
         self.logger = logging.getLogger('discord')
 
         with open('custom_commands.json', 'r') as f:
             self.custom_commands = json.load(f)
 
-        for extension in extensions:
-            self.load_extension(extension)
+        asyncio.get_event_loop().run_until_complete(self.load_extensions())
             
     async def on_member_join(self, member):
         await member.guild.get_channel(805370260957429780).send("Welcome! <:yadelie:642375995961114636>")
@@ -59,5 +63,5 @@ class CelesteBot(commands.Bot):
 
         await self.process_commands(message)
 
-    def run(self):
-        super().run(config.token, reconnect=True)
+    async def run(self):
+        await super().start(config.token, reconnect=True)

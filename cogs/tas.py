@@ -162,5 +162,5 @@ class Tas(commands.Cog):
                 await ctx.send(embed=embed)
                 break
 
-def setup(bot):
-    bot.add_cog(Tas(bot))
+async def setup(bot):
+    await bot.add_cog(Tas(bot))

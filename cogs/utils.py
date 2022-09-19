@@ -38,6 +38,7 @@ class PageSwitcher(discord.ui.View):
         embed = discord.Embed(color=0xFF004D)
         embed.set_image(url=self.results[self.currentpage])
         embed.set_footer(text=f"Page {self.currentpage+1}/{self.totalpages}")
+        await interaction.response.defer()
         await interaction.message.edit(embed=embed, view=self)
 
     def update_buttons(self):
@@ -142,5 +143,5 @@ class Utils(commands.Cog):
         message = await ctx.send(embed=embed, view=PageSwitcher(index, total_pages, result))
     
 
-def setup(bot):
-    bot.add_cog(Utils(bot))
+async def setup(bot):
+    await bot.add_cog(Utils(bot))
