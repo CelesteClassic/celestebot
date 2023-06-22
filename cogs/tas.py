@@ -17,7 +17,7 @@ import traceback
 
 
 # shoutouts to gonen
-async def updateAndCommit(tasfile, data, game, category):
+async def updateAndCommit(tasfile, data, game, category, author):
     home = str(Path.home())
     gitPath=home+'/tasdatabase'
     repo = git.Repo(gitPath)
@@ -75,7 +75,8 @@ async def updateAndCommit(tasfile, data, game, category):
     repo.index.add([os.path.join(rootPath,fileName),jsonPath,zipPath])
    
     commit_msg=f'updated {game} {category} {change["name"]} to be {framecount}f ({int(framecount)-int(oldframes):+}f) (automated)'
-    repo.index.commit(commit_msg)
+    author = git.Actor(author, "celestebot@celesteclassic.github.io")
+    repo.index.commit(commit_msg, author=author)
     repo.remotes.origin.push()
 
 def run():
@@ -102,27 +103,14 @@ class Tas(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        #self.base_url = "https://celesteclassic.github.io/tasdatabase/{}/{}/"
-
-        self.base_categories = {('100', 'any', 'gemskipany', 'key'): 'any', ('nodiag'): 'nodiag', ('mindashes'): 'mindashes'}
-        self.games = {('classic', 'vanilla', 'main'): 'classic', ('terra', 'australis'): 'australis', ('adelie',): 'adelie',
-                      ('everred', 'ever red'): 'everred', ('impossibleste', 'impossible celeste'): 'impossibleste', ('noeleste',): 'noeleste',
-                      ('old site', 'oldsite'): 'oldsite', ('perisher',): 'perisher'}
-        self.categories = {('hundo', '100%', '100'): '100', ('any', 'any%'): 'any', 
-                    ('minimum dashes', 'min dashes', 'mindashes'): 'mindashes', ('gemskip', 'gem-skip', 'gem skip'): 'gemskip',
-                    ('key', 'key%'): 'key', ('nodiag', 'no diagonal dashes', 'no diag'): 'nodiag'}
-
-    @commands.command()
-    async def categories(self, ctx):
-        await ctx.send(f"Possible games in the TAS database: {list(self.games.values())}\n\nPossible categories in the TAS database: {list(self.categories.values())}")
-
+    
     @commands.check(can_upload_tases)
     @commands.command(aliases=["updatetas", "sendtas"])
     async def uploadtas(self, ctx, game, category):
         if len(ctx.message.attachments) > 0:
             try:
                 data = (await ctx.message.attachments[0].read()).decode("utf-8")
-                await updateAndCommit(ctx.message.attachments[0], data, game, category)
+                await updateAndCommit(ctx.message.attachments[0], data, game, category, ctx.author.name)
                 await ctx.send("TAS File uploaded (probably)!")
             except:
                 traceback.print_exc()
