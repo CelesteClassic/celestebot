@@ -14,7 +14,8 @@ extensions = [
     "cogs.utils",
     "cogs.src",
     #"cogs.tas",
-    "cogs.admin"
+    "cogs.admin",
+    "cogs.tas2gif",
 ]
 
 class CelesteBot(commands.Bot):
