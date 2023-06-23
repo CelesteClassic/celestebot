@@ -13,7 +13,7 @@ from multiprocessing import Pool
 extensions = [
     "cogs.utils",
     "cogs.src",
-    #"cogs.tas",
+    "cogs.tas",
     "cogs.admin"
 ]
 

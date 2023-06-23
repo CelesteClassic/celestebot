@@ -5,6 +5,7 @@ import subprocess
 import requests
 from datetime import datetime
 from datetime import timedelta
+from dataclasses import dataclass
 
 import git
 import json
@@ -15,9 +16,11 @@ import shutil
 from pathlib import Path
 import traceback
 
+TAS_CHANNEL_ID = 322437582845771777
+VERIFICATION_CHANNEL_ID = 322437582845771777
 
 # shoutouts to gonen
-async def updateAndCommit(tasfile, data, game, category, author):
+async def updateAndCommit(tasfile, inputs, game, category, author):
     home = str(Path.home())
     gitPath=home+'/tasdatabase'
     repo = git.Repo(gitPath)
@@ -26,7 +29,6 @@ async def updateAndCommit(tasfile, data, game, category, author):
     #repo.git.fetch('--all')
     #repo.git.reset('--hard', 'origin/master')
 
-    inputs=list(map(int,data[data.index("]")+1:].split(',')[:-1]))
     framecount=len(inputs)-1
     dashnum=0
     jumpnum=0
@@ -79,7 +81,7 @@ async def updateAndCommit(tasfile, data, game, category, author):
     repo.index.commit(commit_msg, author=author)
     repo.remotes.origin.push()
 
-def run():
+"""def run():
     process = subprocess.Popen("love ~/UniversalClassicTas/CelesteTAS/ &", stdout=subprocess.PIPE, shell=True)
     final_time = None
     while True:
@@ -93,30 +95,82 @@ def run():
                 return None
             else:
                 final_time = output.strip()
+"""
 
+def process_inputs(data: str):
+    return list(map(int,data[data.index("]")+1:].split(',')[:-1]))
 
+@dataclass
+class TasSubmission:
+    attachment: discord.Attachment
+    inputs: list[int]
+    game: str
+    category: str
+    author: str
+    level: int
+
+    def __str__(self):
+        return f"{self.game}, {self.category} {self.level}00m by {self.author} in {len(self.inputs)-1}f"
 class Tas(commands.Cog):
 
-    async def can_upload_tases(ctx):
-        return ctx.author.guild_permissions.manage_channels or ctx.author.id == 455862775827136513 # snek's id
-
+    def is_tas_verifier(self, ctx):
+        role = discord.utils.get(ctx.guild.roles, name="TAS Verifier")
+        #return ctx.author.guild_permissions.manage_channels or role in ctx.author.roles
+        return role in ctx.author.roles
     def __init__(self, bot):
         self.bot = bot
+        self.submitted_tases = []
 
     
-    @commands.check(can_upload_tases)
     @commands.command(aliases=["updatetas", "sendtas"])
     async def uploadtas(self, ctx, game, category):
         if len(ctx.message.attachments) > 0:
             try:
                 data = (await ctx.message.attachments[0].read()).decode("utf-8")
-                await updateAndCommit(ctx.message.attachments[0], data, game, category, ctx.author.name)
-                await ctx.send("TAS File uploaded (probably)!")
+                inputs = process_inputs(data)
+                level = int(ctx.message.attachments[0].filename.replace(".tas", "")[3:])
+                if (self.is_tas_verifier(ctx)):
+                    await updateAndCommit(ctx.message.attachments[0], inputs, game, category, ctx.author.name)
+                    await ctx.send("TAS File uploaded (probably)!")
+                else:
+                    new_sub = TasSubmission(ctx.message.attachments[0], inputs, game, category, ctx.author.name, level)
+                    
+                    self.submitted_tases.append(new_sub)
+                    await ctx.send("TAS File sent for verification!")
+                    embed = discord.Embed(title="New TAS waiting for verification", 
+                            description=str(new_sub) +
+                                        f"\n[Click here to download the .tas]({ctx.message.attachments[0].url})",
+                            color=0x00E436)
+                    embed.set_footer(text=f"To verify this TAS, use: !verifytas {len(self.submitted_tases)-1}")
+                    await ctx.guild.get_channel(VERIFICATION_CHANNEL_ID).send(embed=embed)
             except:
                 traceback.print_exc()
                 await ctx.send("Something went wrong while uploading the TAS file! (tell cominixo)")
         else:
             await ctx.send("Please include an attachment with the message")
+
+    @commands.command(aliases=["approvetas"])
+    async def verifytas(self, ctx, id: int):
+        if (self.is_tas_verifier(ctx)):
+            if (id < len(self.submitted_tases)):
+                tas = self.submitted_tases[id]
+                try:
+                    await updateAndCommit(tas.attachment, tas.inputs, tas.game, tas.category, tas.author)
+                    await ctx.guild.get_channel(TAS_CHANNEL_ID).send(f"TAS for {tas} has been approved and uploaded (probably)!")
+                    del self.submitted_tases[id]
+                except:
+                    traceback.print_exc()
+                    await ctx.send("Something went wrong while uploading the TAS file! (tell cominixo)")
+            else:
+                await ctx.send(f"The id {id} does not correspond to a valid TAS submission!")
+
+    @commands.command()
+    async def unverifiedtases(self, ctx):
+        tas_list = ""
+        for tas in self.submitted_tases:
+            tas_list += f"- {tas}\n"
+        
+        await ctx.send("The following TASes have not yet been verified:\n" + tas_list)
 
     @commands.command()
     async def tas(self, ctx, game, category, *, levelname):
