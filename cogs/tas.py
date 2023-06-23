@@ -16,8 +16,8 @@ import shutil
 from pathlib import Path
 import traceback
 
-TAS_CHANNEL_ID = 322437582845771777
-VERIFICATION_CHANNEL_ID = 322437582845771777
+TAS_CHANNEL_ID = 548203844992237578
+VERIFICATION_CHANNEL_ID = 1121592306936578162
 
 # shoutouts to gonen
 async def updateAndCommit(tasfile, inputs, game, category, author):
