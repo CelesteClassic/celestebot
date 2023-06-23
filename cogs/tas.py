@@ -157,7 +157,7 @@ class Tas(commands.Cog):
                 if (tas):
                     try:
                         await updateAndCommit(tas.attachment, tas.inputs, tas.game, tas.category, tas.author)
-                        await ctx.send("TAS for {tas} has been approved!")
+                        await ctx.send(f"TAS for {tas} has been approved!")
                         await tas.message.reply(f"TAS for {tas} has been approved and uploaded (probably)!")
                         self.submitted_tases[id] = None
                     except:
