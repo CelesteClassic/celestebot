@@ -115,8 +115,8 @@ class Tas(commands.Cog):
 
     def is_tas_verifier(self, ctx):
         role = discord.utils.get(ctx.guild.roles, name="TAS Verifier")
-        #return ctx.author.guild_permissions.manage_channels or role in ctx.author.roles
-        return role in ctx.author.roles
+        return ctx.author.guild_permissions.manage_channels or role in ctx.author.roles
+        #return role in ctx.author.roles
     def __init__(self, bot):
         self.bot = bot
         self.submitted_tases = []
