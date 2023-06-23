@@ -16,7 +16,6 @@ import shutil
 from pathlib import Path
 import traceback
 
-TAS_CHANNEL_ID = 548203844992237578
 VERIFICATION_CHANNEL_ID = 1121592306936578162
 
 # shoutouts to gonen
@@ -108,6 +107,7 @@ class TasSubmission:
     category: str
     author: str
     level: int
+    message: discord.Message
 
     def __str__(self):
         return f"{self.game}, {self.category} {self.level}00m by {self.author} in {len(self.inputs)-1}f"
@@ -133,7 +133,7 @@ class Tas(commands.Cog):
                     await updateAndCommit(ctx.message.attachments[0], inputs, game, category, ctx.author.name)
                     await ctx.send("TAS File uploaded (probably)!")
                 else:
-                    new_sub = TasSubmission(ctx.message.attachments[0], inputs, game, category, ctx.author.name, level)
+                    new_sub = TasSubmission(ctx.message.attachments[0], inputs, game, category, ctx.author.name, level, ctx.message)
                     
                     self.submitted_tases.append(new_sub)
                     await ctx.send("TAS File sent for verification!")
@@ -154,13 +154,14 @@ class Tas(commands.Cog):
         if (self.is_tas_verifier(ctx)):
             if (id < len(self.submitted_tases)):
                 tas = self.submitted_tases[id]
-                try:
-                    await updateAndCommit(tas.attachment, tas.inputs, tas.game, tas.category, tas.author)
-                    await ctx.guild.get_channel(TAS_CHANNEL_ID).send(f"TAS for {tas} has been approved and uploaded (probably)!")
-                    del self.submitted_tases[id]
-                except:
-                    traceback.print_exc()
-                    await ctx.send("Something went wrong while uploading the TAS file! (tell cominixo)")
+                if (tas):
+                    try:
+                        await updateAndCommit(tas.attachment, tas.inputs, tas.game, tas.category, tas.author)
+                        await tas.message.reply(f"TAS for {tas} has been approved and uploaded (probably)!")
+                        self.submitted_tases[id] = None
+                    except:
+                        traceback.print_exc()
+                        await ctx.send("Something went wrong while uploading the TAS file! (tell cominixo)")
             else:
                 await ctx.send(f"The id {id} does not correspond to a valid TAS submission!")
 
