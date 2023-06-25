@@ -41,17 +41,21 @@ async def updateAndCommit(tasfile, inputs, game, category, author):
     with open(jsonPath,'r') as f:
         data=json.load(f)
 
-    change=None
+    change={}
     for lvl in data[game][category]:
         if lvl['file']==fileName:
             change=lvl
-    if change is None:
-        print(f"no file in {game}/{category} with filename {fileName}")
-        return
 
-    oldframes=change['frames']
-    if oldframes==None:
-        return
+
+    oldframes = framecount
+    
+    if change:
+        oldframes=change['frames']
+    else:
+        change['name'] = fileName.replace(".tas", "")[3:] + '00m'
+        change['file'] = fileName
+        data.append(change)
+        
     change['frames']=framecount
     if 'dashes' in category:
         change['dashes']=dashnum
