@@ -54,7 +54,7 @@ async def updateAndCommit(tasfile, inputs, game, category, author):
     else:
         change['name'] = fileName.replace(".tas", "")[3:] + '00m'
         change['file'] = fileName
-        data.append(change)
+        data[game][category].append(change)
         
     change['frames']=framecount
     if 'dashes' in category:
