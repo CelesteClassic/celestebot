@@ -56,7 +56,6 @@ async def updateAndCommit(tasfile, inputs, game, category, author):
     
     if change['file'] == None:
         change['file'] = fileName
-        data[game][category].append(change)
     else:
         oldframes=change['frames']
 
