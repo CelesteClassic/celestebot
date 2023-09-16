@@ -4,6 +4,7 @@ import discord
 import requests
 import config
 import asyncio
+import random
 
 class SwitchPageButton(discord.ui.Button['switchPage']):
     
@@ -90,6 +91,49 @@ class Utils(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.database_url = "https://celesteclassic.github.io/gifs/"
+
+    @commands.command()
+    async def disclaimer(self, ctx):
+        # Send the text of a random defined command that starts with
+        # "disclaimer"; this allows defining new disclaimers with addcommand,
+        # and also sending any particular one if you know its true name.
+        #await ctx.send(random.choice([val for key,val in self.bot.custom_commands.items() if key.startswith("!disclaimer")] or ["DISCLAIMER: No disclaimers defined"]))
+        #
+        # Alternatively, just hardcode.
+        # This is formatted as a dict instead of a list for easier insertion
+        # into a certain json file
+        await ctx.send(random.choice(list({
+            "!disclaimer_old":     "this is getting old <:zzzdelie:709561310186045540>",
+            "!disclaimer_dciydk":  "DISCLAIMER: Don't click if you don't know",
+            "!disclaimer_3":       "DISCLAIMER: This disclaimer message will self-destruct",
+            "!disclaimer_4":       "DISCLAIMER: If you can read this you're in range",
+            "!disclaimer_5":       "DISCLAIMER: Highly flammable",
+            "!disclaimer_6":       "DISCLAIMER: Chocking hazard",
+            "!disclaimer_warn":    "WARNING: Improper usage of the word \"disclaimer\"",
+            "!disclaimer_none":    "DISCLAIMER: None :)",
+            "!disclaimer_9":       "DISCLAIMER: Disclaimer messages may be inaccurate",
+            "!disclaimer_c":       "DISCLAIMER: No copyright infringement intended",
+            "!disclaimer_nsfw":    "DISCLAIMER: Content not suitable for all audiences",
+            "!disclaimer_clam":    "DISCLAM: Any bivalve molluscs will be removed",
+            "!disclaimer_nuclear": "DISCLAIMER: This is not a place of honor",
+            "!disclaimer_dante":   "DISCLAIMER: Abandon all hope, ye who enter here",
+            "!disclaimer_memorial":"DISCLAIMER: This disclaimer to those who perished on the climb",
+            "!disclaimer_tas":     "DISCLAIMER: Tell cominixo",
+            "!disclaimer_17":      "DISCLAIMER: Help I'm trapped in a disclaimer factory",
+            "!disclaimer_pr":      "DISCLAIMER: Has not been peer-reviewed",
+            "!disclaimer_cite":    "DISCLAIMER: [citation needed]",
+            "!disclaimer_paywall": "DISCLAIMER: You've used up all of your free disclaimers! Subscribe for just 2.99$/month to get unlimited access",
+            "!disclaimer_21":      "DISCLAIMER: Figuring out which claims were disclaimed is left as an exercise for the reader",
+            "!disclaimer_airfryer":"DISCLAIMER: The author of the following content does not own an air fryer",
+            "!disclaimer_spike":   "DISCLAIMER: Spike did not kil",
+            "!disclaimer_canon":   "DISCLAIMER: Not canon",
+            "!disclaimer_florida": "DISCLAIMER: Banned in the state of Florida",
+            "!disclaimer_endorse": "DISCLAIMER: Not endorsed by celestebot",
+            "!disclaimer_":        "DISCLAIMER:",
+            "!disclaimer_alan":    "DISCLAIMER: TODO: finish this disclaimer",
+            "!disclaimer_notfunny":"DISCLAIMER: Not funny",
+            "!disclaimer_30":      "DISCLAIMER: Traduzione non disponibile",
+            }.values())))
 
     @commands.command()
     async def ping(self, ctx):
