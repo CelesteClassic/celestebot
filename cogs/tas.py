@@ -211,7 +211,7 @@ async def addCategory(game, category, category_full_name, level_name_data, autho
 
     async with TasDatabase() as tasdatabase:
         await tasdatabase.add_category(game, category, category_full_name, level_names)
-        commit_msg=f'added new game {game} (automated)'
+        commit_msg=f'added new category {category} to {game} (automated)'
         author = git.Actor(author, "celestebot@celesteclassic.github.io")
         tasdatabase.repo.index.commit(commit_msg, author=author)
         tasdatabase.repo.remotes.origin.push()
