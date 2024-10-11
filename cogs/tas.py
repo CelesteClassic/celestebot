@@ -205,7 +205,7 @@ async def addGameToRepo(game, game_full_name, author):
 async def addCategory(game, category, category_full_name, level_name_data, author):
     level_names = []
     for line in level_name_data.splitlines():
-        level_name, file_name = line.split()
+        level_name, file_name = line.rsplit(maxsplit=1)
         level_names.append([level_name, file_name])
 
 
