@@ -17,6 +17,7 @@ from pathlib import Path
 import traceback
 from bs4 import BeautifulSoup
 import re
+import string
 
 VERIFICATION_CHANNEL_ID = 1121592306936578162
 
@@ -234,7 +235,12 @@ async def addCategory(game, category, category_full_name, level_name_data, autho
 """
 
 def process_inputs(data: str):
-    return list(map(int,data[data.index("]")+1:].split(',')[:-1]))
+    if "]" in data:
+        input_str = data[data.index("]")+1:]
+    else:
+        input_str = data
+    input_str = input_str.rstrip(string.whitespace + ",")
+    return list(map(int,input_str.split(',')))
 
 @dataclass
 class TasSubmission:
@@ -268,7 +274,7 @@ class Tas(commands.Cog):
                 level = int(ctx.message.attachments[0].filename.replace(".tas", "")[3:])
                 if (self.is_tas_verifier(ctx)):
                     await updateAndCommit(ctx.message.attachments[0], inputs, game, category, ctx.author.name)
-                    await ctx.send("TAS File uploaded (probably)!")
+                    await ctx.send(f"{len(inputs)-1}f TAS File uploaded (probably)!")
                 else:
                     new_sub = TasSubmission(ctx.message.attachments[0], inputs, game, category, ctx.author.name, level, ctx.message)
 
