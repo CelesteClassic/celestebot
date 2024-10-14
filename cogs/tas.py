@@ -24,6 +24,7 @@ VERIFICATION_CHANNEL_ID = 1121592306936578162
 class TasDatabase:
     def __init__(self):
         home = Path.home()
+        home = Path("..").resolve()
         self.gitPath=home/'tasdatabase'
         self.repo = git.Repo(self.gitPath)
         self.repo.git.pull()
@@ -193,7 +194,8 @@ async def updateAndCommit(tasfile, inputs, game, category, author):
 
         author = git.Actor(author, "celestebot@celesteclassic.github.io")
         tasdatabase.repo.index.commit(commit_msg, author=author)
-        tasdatabase.repo.remotes.origin.push()
+        # tasdatabase.repo.remotes.origin.push()
+        return commit_msg.removesuffix(" (automated)")
 
 async def addGameToRepo(game, game_full_name, author):
     async with TasDatabase() as tasdatabase:
@@ -267,30 +269,31 @@ class Tas(commands.Cog):
 
     @commands.command(aliases=["updatetas", "sendtas"])
     async def uploadtas(self, ctx, game, category):
-        if len(ctx.message.attachments) > 0:
+        if len(ctx.message.attachments) == 0:
+            await ctx.send("Please include at least one attachment with the message")
+            return
+        for attachment in ctx.message.attachments:
             try:
-                data = (await ctx.message.attachments[0].read()).decode("utf-8")
+                data = (await attachment.read()).decode("utf-8")
                 inputs = process_inputs(data)
-                level = int(ctx.message.attachments[0].filename.replace(".tas", "")[3:])
+                level = int(attachment.filename.replace(".tas", "")[3:])
                 if (self.is_tas_verifier(ctx)):
-                    await updateAndCommit(ctx.message.attachments[0], inputs, game, category, ctx.author.name)
-                    await ctx.send(f"{len(inputs)-1}f TAS File uploaded (probably)!")
+                    msg = await updateAndCommit(attachment, inputs, game, category, ctx.author.name)
+                    await ctx.send(f"{msg} (probably)")
                 else:
-                    new_sub = TasSubmission(ctx.message.attachments[0], inputs, game, category, ctx.author.name, level, ctx.message)
+                    new_sub = TasSubmission(attachment, inputs, game, category, ctx.author.name, level, ctx.message)
 
                     self.submitted_tases.append(new_sub)
-                    await ctx.send("TAS File sent for verification!")
+                    await ctx.send(f"TAS for {new_sub} sent for verification!")
                     embed = discord.Embed(title="New TAS waiting for verification",
                             description=str(new_sub) +
-                                        f"\n[Click here to download the .tas]({ctx.message.attachments[0].url})",
+                                        f"\n[Click here to download the .tas]({attachment.url})",
                             color=0x00E436)
                     embed.set_footer(text=f"To verify this TAS, use: !verifytas {len(self.submitted_tases)-1}")
                     await ctx.guild.get_channel(VERIFICATION_CHANNEL_ID).send(embed=embed)
             except:
                 traceback.print_exc()
-                await ctx.send("Something went wrong while uploading the TAS file! (tell cominixo)")
-        else:
-            await ctx.send("Please include an attachment with the message")
+                await ctx.send(f"Something went wrong while uploading the TAS file {attachment.filename}! (tell cominixo)")
 
     @commands.command(aliases=["approvetas"])
     async def verifytas(self, ctx, id: int):
