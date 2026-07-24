@@ -26,7 +26,6 @@ VERIFICATION_CHANNEL_ID = 1121592306936578162
 class TasDatabase:
     def __init__(self):
         home = Path.home()
-        home = Path("..").resolve()
         self.gitPath=home/'tasdatabase'
         self.repo = git.Repo(self.gitPath)
         self.repo.git.pull()
@@ -197,7 +196,7 @@ async def updateAndCommit(filename, file_data, inputs, game, category, author):
 
         author = git.Actor(author, "celestebot@celesteclassic.github.io")
         tasdatabase.repo.index.commit(commit_msg, author=author)
-        # tasdatabase.repo.remotes.origin.push()
+        tasdatabase.repo.remotes.origin.push()
         return commit_msg.removesuffix(" (automated)")
 
 async def getFrameDelta(filename, inputs, game, category):
