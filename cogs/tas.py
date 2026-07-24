@@ -351,6 +351,20 @@ class Tas(commands.Cog):
                 await ctx.send(f"The id {id} does not correspond to a valid TAS submission!")
 
     @commands.command()
+    async def rejecttas(self, ctx, id: int):
+        if (self.is_tas_verifier(ctx)):
+            if (id < len(self.submitted_tases)):
+                tas = self.submitted_tases[id]
+                if (tas):
+                    await ctx.send(f"TAS for {tas} has been rejected!")
+                    await tas.message.reply(f"TAS for {tas} has been rejected.")
+                    self.submitted_tases[id] = None
+                else:
+                    await ctx.send(f"The TAS submission with id {id} has already been handled!")
+            else:
+                await ctx.send(f"The id {id} does not correspond to a valid TAS submission!")
+
+    @commands.command()
     async def unverifiedtases(self, ctx):
         tas_list = ""
         for tas in self.submitted_tases:
