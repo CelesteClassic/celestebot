@@ -366,8 +366,14 @@ class Tas(commands.Cog):
     @commands.command()
     async def unverifiedtases(self, ctx):
         tas_list = ""
-        for tas in self.submitted_tases:
-            tas_list += f"- {tas}\n"
+        for id, tas in enumerate(self.submitted_tases):
+            if tas is None:
+                continue
+            tas_list += f"- {id}: {tas}\n"
+
+        if not tas_list:
+            await ctx.send("There are no unverified TASes!")
+            return
 
         await ctx.send("The following TASes have not yet been verified:\n" + tas_list)
 
