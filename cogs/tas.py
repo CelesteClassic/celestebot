@@ -7,6 +7,7 @@ import io
 from datetime import datetime
 from datetime import timedelta
 from dataclasses import dataclass
+from typing import Optional
 
 import git
 import json
@@ -199,6 +200,31 @@ async def updateAndCommit(filename, file_data, inputs, game, category, author):
         # tasdatabase.repo.remotes.origin.push()
         return commit_msg.removesuffix(" (automated)")
 
+async def getFrameDelta(filename, inputs, game, category):
+    fileName = filename
+
+    async with TasDatabase() as tasdatabase:
+        framecount=len(inputs)-1
+        lvl_index = int(fileName.replace(".tas", "")[3:])
+        lvl_name = str(lvl_index) + '00m'
+
+        change={}
+        for lvl in tasdatabase.data[game][category]:
+            if lvl['file']==fileName or lvl['name'] == lvl_name:
+                change=lvl
+
+        if not change:
+            change = tasdatabase.data[game][category][lvl_index-1]
+
+        if change['file'] == None:
+            return None
+
+        oldframes=change['frames']
+        if oldframes:
+            return int(framecount)-int(oldframes)
+
+        return None
+
 async def addGameToRepo(game, game_full_name, author):
     async with TasDatabase() as tasdatabase:
         await tasdatabase.add_game(game, game_full_name)
@@ -251,6 +277,7 @@ class TasSubmission:
     filename: str
     file_data: bytes
     inputs: list[int]
+    frame_delta: Optional[int]
     game: str
     category: str
     author: str
@@ -258,7 +285,10 @@ class TasSubmission:
     message: discord.Message
 
     def __str__(self):
-        return f"{self.game}, {self.category} {self.level}00m by {self.author} in {len(self.inputs)-1}f"
+        delta = ""
+        if self.frame_delta is not None:
+            delta = f" ({self.frame_delta:+}f)"
+        return f"{self.game}, {self.category} {self.level}00m by {self.author} in {len(self.inputs)-1}f{delta}"
 class Tas(commands.Cog):
 
     def is_tas_verifier(self, ctx):
@@ -285,7 +315,8 @@ class Tas(commands.Cog):
                     msg = await updateAndCommit(attachment.filename, file_data, inputs, game, category, ctx.author.name)
                     await ctx.send(f"{msg} (probably)")
                 else:
-                    new_sub = TasSubmission(attachment.filename, file_data, inputs, game, category, ctx.author.name, level, ctx.message)
+                    frame_delta = await getFrameDelta(attachment.filename, inputs, game, category)
+                    new_sub = TasSubmission(attachment.filename, file_data, inputs, frame_delta, game, category, ctx.author.name, level, ctx.message)
 
                     self.submitted_tases.append(new_sub)
                     await ctx.send(f"TAS for {new_sub} sent for verification!")
