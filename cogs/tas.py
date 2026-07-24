@@ -3,6 +3,7 @@ import discord
 import asyncio
 import subprocess
 import requests
+import io
 from datetime import datetime
 from datetime import timedelta
 from dataclasses import dataclass
@@ -132,8 +133,8 @@ class TasDatabase:
 
 
 # shoutouts to gonen
-async def updateAndCommit(tasfile, inputs, game, category, author):
-    fileName = tasfile.filename
+async def updateAndCommit(filename, file_data, inputs, game, category, author):
+    fileName = filename
 
     async with TasDatabase() as tasdatabase:
         framecount=len(inputs)-1
@@ -175,7 +176,8 @@ async def updateAndCommit(tasfile, inputs, game, category, author):
 
         rootPath = os.path.join(tasdatabase.gitPath, game, category)
 
-        await tasfile.save(os.path.join(rootPath,fileName))
+        with open(os.path.join(rootPath,fileName), "wb") as f:
+            f.write(file_data)
 
 
 
@@ -246,7 +248,8 @@ def process_inputs(data: str):
 
 @dataclass
 class TasSubmission:
-    attachment: discord.Attachment
+    filename: str
+    file_data: bytes
     inputs: list[int]
     game: str
     category: str
@@ -274,23 +277,27 @@ class Tas(commands.Cog):
             return
         for attachment in ctx.message.attachments:
             try:
-                data = (await attachment.read()).decode("utf-8")
+                file_data = await attachment.read()
+                data = file_data.decode("utf-8")
                 inputs = process_inputs(data)
                 level = int(attachment.filename.replace(".tas", "")[3:])
                 if (self.is_tas_verifier(ctx)):
-                    msg = await updateAndCommit(attachment, inputs, game, category, ctx.author.name)
+                    msg = await updateAndCommit(attachment.filename, file_data, inputs, game, category, ctx.author.name)
                     await ctx.send(f"{msg} (probably)")
                 else:
-                    new_sub = TasSubmission(attachment, inputs, game, category, ctx.author.name, level, ctx.message)
+                    new_sub = TasSubmission(attachment.filename, file_data, inputs, game, category, ctx.author.name, level, ctx.message)
 
                     self.submitted_tases.append(new_sub)
                     await ctx.send(f"TAS for {new_sub} sent for verification!")
                     embed = discord.Embed(title="New TAS waiting for verification",
                             description=str(new_sub) +
-                                        f"\n[Click here to download the .tas]({attachment.url})",
+                                        f"\n[Original submission]({ctx.message.jump_url})",
                             color=0x00E436)
                     embed.set_footer(text=f"To verify this TAS, use: !verifytas {len(self.submitted_tases)-1}")
-                    await ctx.guild.get_channel(VERIFICATION_CHANNEL_ID).send(embed=embed)
+                    verification_channel = ctx.guild.get_channel(VERIFICATION_CHANNEL_ID)
+                    await verification_channel.send(embed=embed)
+                    verification_file = discord.File(io.BytesIO(file_data), filename=attachment.filename)
+                    await verification_channel.send(file=verification_file)
             except:
                 traceback.print_exc()
                 await ctx.send(f"Something went wrong while uploading the TAS file {attachment.filename}! (tell cominixo)")
@@ -302,7 +309,7 @@ class Tas(commands.Cog):
                 tas = self.submitted_tases[id]
                 if (tas):
                     try:
-                        await updateAndCommit(tas.attachment, tas.inputs, tas.game, tas.category, tas.author)
+                        await updateAndCommit(tas.filename, tas.file_data, tas.inputs, tas.game, tas.category, tas.author)
                         await ctx.send(f"TAS for {tas} has been approved!")
                         await tas.message.reply(f"TAS for {tas} has been approved and uploaded (probably)!")
                         self.submitted_tases[id] = None
