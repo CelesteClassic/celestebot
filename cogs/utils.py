@@ -127,16 +127,22 @@ class Utils(commands.Cog):
         gifs = requests.get(self.database_url + "database.json").json()
 
         result = []
+        is_hard = []
 
         for gif in gifs:
             if all(tag in gif['tags'] for tag in query):
                 result.append(self.database_url + gif['url'])
+                if "2400" in gif['tags'] and "gemskip" in gif['tags']:
+                    is_hard.append(True)
+                else:
+                    is_hard.append(False)
 
         total_pages = len(result)
 
         index = index%total_pages
-        
-        embed = discord.Embed(color=0xFF004D)
+
+        description = "This is hard!" if is_hard[index] else None
+        embed = discord.Embed(color=0xFF004D, description=description)
         embed.set_image(url=result[index])
         embed.set_footer(text=f"Page {index+1}/{total_pages}")
 
